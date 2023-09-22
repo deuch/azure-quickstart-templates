@@ -431,7 +431,7 @@
     "privateBlobEndpointSettings": {
       "name": "[format('{0}-PrivateEndpoint-blob', parameters('workspaceName'))]",
       "properties": {
-        "privateLinkServiceId": "variables('storageAccountId')",
+        "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
         "groupIds": [
           "blob"
         ]
@@ -440,7 +440,7 @@
     "privateFileEndpointSettings": {
       "name": "[format('{0}-PrivateEndpoint-file', parameters('workspaceName'))]",
       "properties": {
-        "privateLinkServiceId": "variables('storageAccountId')",
+        "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
         "groupIds": [
           "file"
         ]
@@ -451,7 +451,7 @@
       "properties": {
         "privateLinkServiceId": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
         "groupIds": [
-          "amlworkspace"
+          "vault"
         ]
       }
     },
