@@ -209,6 +209,22 @@ var privateAznbDnsZoneName = {
   azurecloud: 'privatelink.notebooks.azure.net'
   azurechinacloud: 'privatelink.notebooks.chinacloudapi.cn'
 }
+var privateBlobDnsZoneName = {
+  azureusgovernment: 'privatelink.blob.core.usgovcloudapi.net'
+  azurechinacloud: 'privatelink.blob.core.usgovcloudapi.net'
+  azurecloud: 'privatelink.blob.core.windows.net'
+}
+var privateFileDnsZoneName = {
+  azureusgovernment: 'privatelink.file.core.usgovcloudapi.net'
+  azurechinacloud: 'privatelink.file.core.usgovcloudapi.net'
+  azurecloud: 'privatelink.file.core.windows.net'
+}
+var privateKVDnsZoneName = {
+  azureusgovernment: 'privatelink.vaultcore.usgovcloudapi.net'
+  azurecloud: 'privatelink.vaultcore.azure.net'
+  azurechinacloud: 'privatelink.vaultcore.azure.cn'
+}
+
 var enablePE = (privateEndpointType != 'none')
 var networkRuleSetBehindVNet = {
   defaultAction: 'deny'
@@ -422,6 +438,9 @@ module DeployPrivateEndpoints './nested_DeployPrivateEndpoints.bicep' = {
     subnetId: subnetPEId
     privateDnsZoneName: privateDnsZoneName
     privateAznbDnsZoneName: privateAznbDnsZoneName
+    privateBlobDnsZoneName: privateBlobDnsZoneName
+    privateFileDnsZoneName: privateFileDnsZoneName
+    privateKVDnsZoneName: privateKVDnsZoneName
     vnetId: vnetId
     workspaceName: workspaceName
     vnetLocation: vnetLocation
