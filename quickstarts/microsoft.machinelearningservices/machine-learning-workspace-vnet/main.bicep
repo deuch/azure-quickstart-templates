@@ -149,11 +149,18 @@ param addressPrefixes array = [
 ])
 param subnetOption string = (((privateEndpointType != 'none') || (vnetOption == 'new')) ? 'new' : 'none')
 
-@description('Name of the subnet')
-param subnetName string = 'sn${uniqueString(resourceGroup().id, workspaceName)}'
+@description('Name of the Compute subnet')
+param subnetComputeName string = 'sn${uniqueString(resourceGroup().id, workspaceName)}'
 
-@description('Subnet prefix of the virtual network')
-param subnetPrefix string = '10.0.0.0/24'
+@description('Subnet Compute prefix of the virtual network')
+param subnetComputePrefix string = '10.0.0.0/24'
+
+@description('Name of Private Endpoint subnet')
+param subnetPEName string = 'sn${uniqueString(resourceGroup().id, workspaceName)}'
+
+@description('Subnet private endpoint prefix of the virtual network')
+param subnetPEPrefix string = '10.0.0.0/24'
+
 
 @description('Specifies that the Azure Machine Learning workspace holds highly confidential data.')
 @allowed([
@@ -189,7 +196,8 @@ var keyVaultId = resourceId(keyVaultResourceGroupName, 'Microsoft.KeyVault/vault
 var containerRegistryId = resourceId(containerRegistryResourceGroupName, 'Microsoft.ContainerRegistry/registries', containerRegistryName)
 var applicationInsightId = resourceId(applicationInsightsResourceGroupName, 'Microsoft.Insights/components', applicationInsightsName)
 var vnetId = resourceId(vnetResourceGroupName, 'Microsoft.Network/virtualNetworks', vnetName)
-var subnetId = resourceId(vnetResourceGroupName, 'Microsoft.Network/virtualNetworks/subnets', vnetName, subnetName)
+var subnetComputeId = resourceId(vnetResourceGroupName, 'Microsoft.Network/virtualNetworks/subnets', vnetName, subnetComputeName)
+var subnetPEId = resourceId(vnetResourceGroupName, 'Microsoft.Network/virtualNetworks/subnets', vnetName, subnetPEName)
 
 var privateDnsZoneName = {
   azureusgovernment: 'privatelink.api.ml.azure.us'
@@ -207,7 +215,11 @@ var networkRuleSetBehindVNet = {
   virtualNetworkRules: [
     {
       action: 'Allow'
-      id: subnetId
+      id: subnetComputeId
+    },
+    {
+      action: 'Allow'
+      id: subnetPEId
     }
   ]
 }
@@ -272,15 +284,26 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-05-01' = if (vnetOption ==
   }
 }
 
-resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-05-01' = if (subnetOption == 'new') {
+resource subnetCompute 'Microsoft.Network/virtualNetworks/subnets@2022-05-01' = if (subnetOption == 'new') {
   parent: vnet
-  name: subnetName
+  name: subnetComputeName
   properties: {
-    addressPrefix: subnetPrefix
+    addressPrefix: subnetComputePrefix
     privateLinkServiceNetworkPolicies: 'Enabled'
     serviceEndpoints: ((toLower(environment().name) == 'azurechinacloud') ? serviceEndpointsAzureChinaCloud : serviceEndpointsAll)
   }
 }
+
+resource subnetPE 'Microsoft.Network/virtualNetworks/subnets@2022-05-01' = if (subnetOption == 'new') {
+  parent: vnet
+  name: subnetPEName
+  properties: {
+    addressPrefix: subnetPEPrefix
+    privateLinkServiceNetworkPolicies: 'Enabled'
+    serviceEndpoints: ((toLower(environment().name) == 'azurechinacloud') ? serviceEndpointsAzureChinaCloud : serviceEndpointsAll)
+  }
+}
+
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = if (storageAccountOption == 'new') {
   name: storageAccountName
@@ -291,7 +314,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = if (sto
   kind: 'StorageV2'
   tags: tagValues
   dependsOn: [
-    subnet
+    subnetPE
   ]
   properties: {
     encryption: {
@@ -317,7 +340,7 @@ resource vault 'Microsoft.KeyVault/vaults@2022-07-01' = if (keyVaultOption == 'n
   location: location
   tags: tagValues
   dependsOn: [
-    subnet
+    subnetPE
   ]
   properties: {
     tenantId: tenantId
@@ -338,7 +361,7 @@ resource registry 'Microsoft.ContainerRegistry/registries@2022-02-01-preview' = 
   }
   tags: tagValues
   dependsOn:  [
-    subnet
+    subnetPE
   ]
   properties: {
     adminUserEnabled: true
@@ -386,7 +409,7 @@ resource workspace 'Microsoft.MachineLearningServices/workspaces@2022-10-01' = {
       }
     }
     hbiWorkspace: confidential_data
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: 'Enabled'
   }
 }
 
@@ -396,7 +419,7 @@ module DeployPrivateEndpoints './nested_DeployPrivateEndpoints.bicep' = {
   params: {
     enablePE: enablePE
     defaultPEConnections: defaultPEConnections
-    subnetId: subnetId
+    subnetId: subnetPEId
     privateDnsZoneName: privateDnsZoneName
     privateAznbDnsZoneName: privateAznbDnsZoneName
     vnetId: vnetId
