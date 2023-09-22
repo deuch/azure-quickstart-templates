@@ -237,7 +237,7 @@
     },
     "vnetName": {
       "type": "string",
-      "defaultValue": "[format('{0}/{1}', resourceGroup().name,'-AL']",
+      "defaultValue": "[format('{0}-AML', resourceGroup().name]",
       "metadata": {
         "description": "Name of the VNet"
       }
