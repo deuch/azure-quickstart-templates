@@ -237,7 +237,7 @@
     },
     "vnetName": {
       "type": "string",
-      "defaultValue": "[format('vn{0}', uniqueString(resourceGroup().id, parameters('workspaceName')))]",
+      "defaultValue": "[resourceGroup().name]",
       "metadata": {
         "description": "Name of the VNet"
       }
@@ -279,7 +279,7 @@
     },
     "subnetComputeName": {
       "type": "string",
-      "defaultValue": "[format('sn{0}', uniqueString(resourceGroup().id, parameters('workspaceName')))]",
+      "defaultValue": "aml_compute",
       "metadata": {
         "description": "Name of the subnet for Compute Instance"
       }
@@ -293,14 +293,14 @@
     },
     "subnetPEName": {
       "type": "string",
-      "defaultValue": "[format('sn{0}', uniqueString(resourceGroup().id, parameters('workspaceName')))]",
+      "defaultValue": "pe",
       "metadata": {
         "description": "Name of the subnet for Private Endpoints"
       }
     },
     "subnetPEPrefix": {
       "type": "string",
-      "defaultValue": "10.0.0.0/24",
+      "defaultValue": "10.0.1.0/24",
       "metadata": {
         "description": "Subnet private endpoint prefix of the virtual network"
       }
@@ -343,7 +343,7 @@
     },
     "privateEndpointType": {
       "type": "string",
-      "defaultValue": "none",
+      "defaultValue": "AutoApproval",
       "allowedValues": [
         "AutoApproval",
         "ManualApproval",
