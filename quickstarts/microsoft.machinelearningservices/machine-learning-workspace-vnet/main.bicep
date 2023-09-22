@@ -267,7 +267,42 @@ var privateEndpointSettings = {
     ]
   }
 }
+
+var privateEndpointBlobSettings = {
+  name: '${workspaceName}-PrivateEndpoint-Blob'
+  properties: {
+    privateLinkServiceId: storageAccountId
+    groupIds: [
+      'amlworkspace'
+    ]
+  }
+}
+
+var privateEndpointFileSettings = {
+  name: '${workspaceName}-PrivateEndpoint-File'
+  properties: {
+    privateLinkServiceId: storageAccountId
+    groupIds: [
+      'amlworkspace'
+    ]
+  }
+}
+
+var privateEndpointKVSettings = {
+  name: '${workspaceName}-PrivateEndpoint-KV'
+  properties: {
+    privateLinkServiceId: keyVaultId
+    groupIds: [
+      'amlworkspace'
+    ]
+  }
+}
+
 var defaultPEConnections = array(privateEndpointSettings)
+var blobPEConnections = array(privateBlobEndpointSettings)
+var filePEConnections = array(privateFileEndpointSettings)
+var KVPEConnections = array(privateKVEndpointSettings)
+
 var userAssignedIdentities = union(userAssignedIdentitiesPrimary, userAssignedIdentitiesCmk)
 var userAssignedIdentityPrimary = {
   '${primaryUserAssignedIdentity}': {
