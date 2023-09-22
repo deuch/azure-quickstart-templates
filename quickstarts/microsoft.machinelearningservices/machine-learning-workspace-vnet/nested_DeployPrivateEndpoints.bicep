@@ -1,5 +1,8 @@
 param enablePE bool
 param defaultPEConnections array
+param blobPEConnections array
+param filePEConnections array
+param KVPEConnections array
 param subnetId string
 param privateDnsZoneName object
 param privateAznbDnsZoneName object
