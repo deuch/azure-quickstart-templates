@@ -457,8 +457,8 @@
     },
     "defaultPEConnections": "[array(variables('privateEndpointSettings'))]",
     "blobPEConnections": "[array(variables('privateBlobEndpointSettings'))]",
-    "filePEConnections ": "[array(variables('privateFileEndpointSettings'))]",
-    "KVPEConnections ": "[array(variables('privateKVEndpointSettings'))]",
+    "filePEConnections": "[array(variables('privateFileEndpointSettings'))]",
+    "KVPEConnections": "[array(variables('privateKVEndpointSettings'))]",
     "userAssignedIdentities": "[union(variables('userAssignedIdentitiesPrimary'), variables('userAssignedIdentitiesCmk'))]",
     "userAssignedIdentityPrimary": {
       "[format('{0}', variables('primaryUserAssignedIdentity'))]": {}
