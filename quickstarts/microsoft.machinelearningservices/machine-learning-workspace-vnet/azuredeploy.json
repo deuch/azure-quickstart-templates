@@ -274,21 +274,35 @@
         "none"
       ],
       "metadata": {
-        "description": "Determines whether or not a new subnet should be provisioned."
+        "description": "Determines whether or not a new subnets should be provisioned."
       }
     },
-    "subnetName": {
+    "subnetComputeName": {
       "type": "string",
       "defaultValue": "[format('sn{0}', uniqueString(resourceGroup().id, parameters('workspaceName')))]",
       "metadata": {
-        "description": "Name of the subnet"
+        "description": "Name of the subnet for Compute Instance"
       }
     },
-    "subnetPrefix": {
+    "subnetComputePrefix": {
       "type": "string",
       "defaultValue": "10.0.0.0/24",
       "metadata": {
-        "description": "Subnet prefix of the virtual network"
+        "description": "Subnet Compute instance prefix of the virtual network"
+      }
+    },
+    "subnetPEName": {
+      "type": "string",
+      "defaultValue": "[format('sn{0}', uniqueString(resourceGroup().id, parameters('workspaceName')))]",
+      "metadata": {
+        "description": "Name of the subnet for Private Endpoints"
+      }
+    },
+    "subnetPEPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/24",
+      "metadata": {
+        "description": "Subnet private endpoint prefix of the virtual network"
       }
     },
     "confidential_data": {
@@ -344,7 +358,8 @@
     "containerRegistryId": "[resourceId(parameters('containerRegistryResourceGroupName'), 'Microsoft.ContainerRegistry/registries', parameters('containerRegistryName'))]",
     "applicationInsightId": "[resourceId(parameters('applicationInsightsResourceGroupName'), 'Microsoft.Insights/components', parameters('applicationInsightsName'))]",
     "vnetId": "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
-    "subnetId": "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
+    "subnetComputeId": "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetComputeName'))]",
+    "subnetPEId": "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]",
     "privateDnsZoneName": {
       "azureusgovernment": "privatelink.api.ml.azure.us",
       "azurechinacloud": "privatelink.api.ml.azure.cn",
@@ -361,7 +376,11 @@
       "virtualNetworkRules": [
         {
           "action": "Allow",
-          "id": "[variables('subnetId')]"
+          "id": "[variables('subnetComputeId')]"
+        },
+        {
+          "action": "Allow",
+          "id": "[variables('subnetPEId')]"
         }
       ]
     },
@@ -431,9 +450,23 @@
       "condition": "[equals(parameters('subnetOption'), 'new')]",
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2022-05-01",
-      "name": "[format('{0}/{1}', parameters('vnetName'), parameters('subnetName'))]",
+      "name": "[format('{0}/{1}', parameters('vnetName'), parameters('subnetComputeName'))]",
       "properties": {
-        "addressPrefix": "[parameters('subnetPrefix')]",
+        "addressPrefix": "[parameters('subnetComputePrefix')]",
+        "privateLinkServiceNetworkPolicies": "Enabled",
+        "serviceEndpoints": "[if(equals(toLower(environment().name), 'azurechinacloud'), variables('serviceEndpointsAzureChinaCloud'), variables('serviceEndpointsAll'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('subnetOption'), 'new')]",
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2022-05-01",
+      "name": "[format('{0}/{1}', parameters('vnetName'), parameters('subnetPEName'))]",
+      "properties": {
+        "addressPrefix": "[parameters('subnetPEPrefix')]",
         "privateLinkServiceNetworkPolicies": "Enabled",
         "serviceEndpoints": "[if(equals(toLower(environment().name), 'azurechinacloud'), variables('serviceEndpointsAzureChinaCloud'), variables('serviceEndpointsAll'))]"
       },
@@ -470,7 +503,7 @@
         "networkAcls": "[if(equals(parameters('storageAccountBehindVNet'), 'true'), variables('networkRuleSetBehindVNet'), json('null'))]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]"
       ]
     },
     {
@@ -490,7 +523,7 @@
         "networkAcls": "[if(equals(parameters('keyVaultBehindVNet'), 'true'), variables('networkRuleSetBehindVNet'), json('null'))]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]"
       ]
     },
     {
@@ -508,7 +541,7 @@
         "networkRuleSet": "[if(equals(parameters('containerRegistryBehindVNet'), 'true'), variables('networkRuleSetBehindVNet'), json('null'))]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]"
       ]
     },
     {
@@ -575,8 +608,11 @@
           "defaultPEConnections": {
             "value": "[variables('defaultPEConnections')]"
           },
-          "subnetId": {
-            "value": "[variables('subnetId')]"
+          "subnetComputeId": {
+            "value": "[variables('subnetComputeId')]"
+          },
+          "subnetPEId": {
+            "value": "[variables('subnetPEId')]"
           },
           "privateDnsZoneName": {
             "value": "[variables('privateDnsZoneName')]"
@@ -617,7 +653,10 @@
             "defaultPEConnections": {
               "type": "array"
             },
-            "subnetId": {
+            "subnetComputeId": {
+              "type": "string"
+            },
+            "subnetPEId": {
               "type": "string"
             },
             "privateDnsZoneName": {
@@ -668,7 +707,7 @@
                 "privateLinkServiceConnections": "[if(equals(parameters('privateEndpointType'), 'AutoApproval'), parameters('defaultPEConnections'), json('null'))]",
                 "manualPrivateLinkServiceConnections": "[if(equals(parameters('privateEndpointType'), 'ManualApproval'), parameters('defaultPEConnections'), json('null'))]",
                 "subnet": {
-                  "id": "[parameters('subnetId')]"
+                  "id": "[parameters('subnetPEId')]"
                 }
               }
             },
