@@ -366,18 +366,18 @@
       "azurecloud": "privatelink.api.azureml.ms"
     },
     "privateBlobDnsZoneName": {
-      "azureusgovernment": "privatelink.blob.core.usgovcloudapi.net"
-      "azurechinacloud": "privatelink.blob.core.usgovcloudapi.net"
+      "azureusgovernment": "privatelink.blob.core.usgovcloudapi.net",
+      "azurechinacloud": "privatelink.blob.core.usgovcloudapi.net",
       "azurecloud": "privatelink.blob.core.windows.net"
     },
     "privateFilebDnsZoneName": {
-      "azureusgovernment": "privatelink.file.core.usgovcloudapi.net"
-      "azurechinacloud": "privatelink.file.core.usgovcloudapi.net"
+      "azureusgovernment": "privatelink.file.core.usgovcloudapi.net",
+      "azurechinacloud": "privatelink.file.core.usgovcloudapi.net",
       "azurecloud": "privatelink.file.core.windows.net"
     },
     "privateKVDnsZoneName": {
-      "azureusgovernment": "privatelink.vaultcore.usgovcloudapi.net"
-      "azurechinacloud": "privatelink.vaultcore.azure.cn"
+      "azureusgovernment": "privatelink.vaultcore.usgovcloudapi.net",
+      "azurechinacloud": "privatelink.vaultcore.azure.cn",
       "azurecloud": "privatelink.vaultcore.azure.net"
     },
     "privateAznbDnsZoneName": {
