@@ -470,6 +470,9 @@ module DeployPrivateEndpoints './nested_DeployPrivateEndpoints.bicep' = {
   params: {
     enablePE: enablePE
     defaultPEConnections: defaultPEConnections
+    blobPEConnections: blobPEConnections
+    filePEConnections: filePEConnections
+    KVPEConnections: KVPEConnections
     subnetId: subnetPEId
     privateDnsZoneName: privateDnsZoneName
     privateAznbDnsZoneName: privateAznbDnsZoneName
