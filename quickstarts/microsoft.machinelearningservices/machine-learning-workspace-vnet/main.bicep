@@ -269,7 +269,7 @@ var privateEndpointSettings = {
 }
 
 var privateEndpointBlobSettings = {
-  name: '${workspaceName}-PrivateEndpoint-Blob'
+  name: '${workspaceName}-PrivateEndpoint-blob'
   properties: {
     privateLinkServiceId: storageAccountId
     groupIds: [
@@ -279,7 +279,7 @@ var privateEndpointBlobSettings = {
 }
 
 var privateEndpointFileSettings = {
-  name: '${workspaceName}-PrivateEndpoint-File'
+  name: '${workspaceName}-PrivateEndpoint-file'
   properties: {
     privateLinkServiceId: storageAccountId
     groupIds: [
@@ -289,7 +289,7 @@ var privateEndpointFileSettings = {
 }
 
 var privateEndpointKVSettings = {
-  name: '${workspaceName}-PrivateEndpoint-KV'
+  name: '${workspaceName}-PrivateEndpoint-kv'
   properties: {
     privateLinkServiceId: keyVaultId
     groupIds: [
