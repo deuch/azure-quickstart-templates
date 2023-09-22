@@ -137,7 +137,7 @@
     },
     "keyVaultBehindVNet": {
       "type": "string",
-      "defaultValue": "false",
+      "defaultValue": "true",
       "allowedValues": [
         "true",
         "false"
@@ -238,7 +238,7 @@
     },
     "vnetName": {
       "type": "string",
-      "defaultValue": "[format('{0}-AML', resourceGroup().name]",
+      "defaultValue": "aml-private-aml-vnet",
       "metadata": {
         "description": "Name of the VNet"
       }
@@ -308,7 +308,7 @@
     },
     "confidential_data": {
       "type": "bool",
-      "defaultValue": false,
+      "defaultValue": true,
       "allowedValues": [
         false,
         true
