@@ -663,7 +663,7 @@
       "condition": "[variables('enablePE')]",
       "type": "Microsoft.Network/privateEndpoints",
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
       ],
       "apiVersion": "2022-05-01",
@@ -682,7 +682,7 @@
       "condition": "[variables('enablePE')]",
       "type": "Microsoft.Network/privateEndpoints",
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
       ],
       "apiVersion": "2022-05-01",
@@ -701,7 +701,7 @@
       "condition": "[variables('enablePE')]",
       "type": "Microsoft.Network/privateEndpoints",
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]",
         "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
       ],
       "apiVersion": "2022-05-01",
