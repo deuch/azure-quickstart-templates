@@ -42,7 +42,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2022-05-01' = if (e
 }
 
 resource privateEndpointBlob 'Microsoft.Network/privateEndpoints@2022-05-01' = if (enablePE) {
-  name: '${workspaceName}-PrivateEndpoint-Blob'
+  name: '${workspaceName}-PrivateEndpoint-blob'
   location: vnetLocation
   tags: tagValues
   properties: {
@@ -55,7 +55,7 @@ resource privateEndpointBlob 'Microsoft.Network/privateEndpoints@2022-05-01' = i
 }
 
 resource privateEndpointFile 'Microsoft.Network/privateEndpoints@2022-05-01' = if (enablePE) {
-  name: '${workspaceName}-PrivateEndpoint-File'
+  name: '${workspaceName}-PrivateEndpoint-file'
   location: vnetLocation
   tags: tagValues
   properties: {
@@ -68,7 +68,7 @@ resource privateEndpointFile 'Microsoft.Network/privateEndpoints@2022-05-01' = i
 }
 
 resource privateEndpointKV 'Microsoft.Network/privateEndpoints@2022-05-01' = if (enablePE) {
-  name: '${workspaceName}-PrivateEndpoint-KV'
+  name: '${workspaceName}-PrivateEndpoint-kv'
   location: vnetLocation
   tags: tagValues
   properties: {
