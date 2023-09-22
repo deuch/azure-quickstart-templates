@@ -884,19 +884,63 @@
             "properties": {
               "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('privateAznbDnsZoneName')[toLower(environment().name)])]"
             }
-          },
+          }        
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateDnsZones', variables('privateAznbDnsZoneName')[toLower(environment().name)])]",
+        "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDnsZoneName')[toLower(environment().name)])]",
+        "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint', parameters('workspaceName')))]",
+        "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-blob', parameters('workspaceName')))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('privateEndpointType'), 'AutoApproval')]",
+      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "apiVersion": "2022-05-01",
+      "name": "[format('{0}/{1}', format('{0}-PrivateEndpoint-blob', parameters('workspaceName')), 'default')]",
+      "properties": {
+        "privateDnsZoneConfigs": [
           {
             "name": "privatelink-blob-core-windows-net",
             "properties": {
               "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('privateBlobDnsZoneName')[toLower(environment().name)])]"
             }
-          },
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateDnsZones', variables('privateBlobDnsZoneName')[toLower(environment().name)])]",
+        "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-blob', parameters('workspaceName')))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('privateEndpointType'), 'AutoApproval')]",
+      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "apiVersion": "2022-05-01",
+      "name": "[format('{0}/{1}', format('{0}-PrivateEndpoint-file', parameters('workspaceName')), 'default')]",
+      "properties": {
+        "privateDnsZoneConfigs": [
           {
             "name": "privatelink-file-core-windows-net",
             "properties": {
               "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('privateFileDnsZoneName')[toLower(environment().name)])]"
             }
-          },
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateDnsZones', variables('privateFileDnsZoneName')[toLower(environment().name)])]",
+        "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-file', parameters('workspaceName')))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('privateEndpointType'), 'AutoApproval')]",
+      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "apiVersion": "2022-05-01",
+      "name": "[format('{0}/{1}', format('{0}-PrivateEndpoint-kv', parameters('workspaceName')), 'default')]",
+      "properties": {
+        "privateDnsZoneConfigs": [
           {
             "name": "privatelink-vaultcore-windows-net",
             "properties": {
@@ -906,14 +950,7 @@
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/privateDnsZones', variables('privateAznbDnsZoneName')[toLower(environment().name)])]",
-        "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDnsZoneName')[toLower(environment().name)])]",
-        "[resourceId('Microsoft.Network/privateDnsZones', variables('privateBlobDnsZoneName')[toLower(environment().name)])]",
-        "[resourceId('Microsoft.Network/privateDnsZones', variables('privateFileDnsZoneName')[toLower(environment().name)])]",
         "[resourceId('Microsoft.Network/privateDnsZones', variables('privateKVDnsZoneName')[toLower(environment().name)])]",
-        "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint', parameters('workspaceName')))]",
-        "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-blob', parameters('workspaceName')))]",
-        "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-file', parameters('workspaceName')))]",
         "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-kv', parameters('workspaceName')))]"
       ]
     }
