@@ -273,7 +273,7 @@ var privateEndpointBlobSettings = {
   properties: {
     privateLinkServiceId: storageAccountId
     groupIds: [
-      'amlworkspace'
+      'blob'
     ]
   }
 }
@@ -283,7 +283,7 @@ var privateEndpointFileSettings = {
   properties: {
     privateLinkServiceId: storageAccountId
     groupIds: [
-      'amlworkspace'
+      'file'
     ]
   }
 }
@@ -293,7 +293,7 @@ var privateEndpointKVSettings = {
   properties: {
     privateLinkServiceId: keyVaultId
     groupIds: [
-      'amlworkspace'
+      'vault'
     ]
   }
 }
