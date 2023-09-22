@@ -430,7 +430,7 @@
     "privateBlobEndpointSettings": {
       "name": "[format('{0}-PrivateEndpoint-blob', parameters('workspaceName'))]",
       "properties": {
-        "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "privateLinkServiceId": "variables('storageAccountId')",
         "groupIds": [
           "blob"
         ]
@@ -439,7 +439,7 @@
     "privateFileEndpointSettings": {
       "name": "[format('{0}-PrivateEndpoint-file', parameters('workspaceName'))]",
       "properties": {
-        "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "privateLinkServiceId": "variables('storageAccountId')",
         "groupIds": [
           "file"
         ]
