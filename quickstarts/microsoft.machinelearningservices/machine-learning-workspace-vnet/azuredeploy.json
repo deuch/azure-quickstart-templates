@@ -641,7 +641,7 @@
       ]
     },
     {
-      "condition": "[parameters('enablePE')]",
+      "condition": "[variables('enablePE')]",
       "type": "Microsoft.Network/privateEndpoints",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]",
@@ -660,7 +660,7 @@
       }
     },
     {
-      "condition": "[parameters('enablePE')]",
+      "condition": "[variables('enablePE')]",
       "type": "Microsoft.Network/privateEndpoints",
       "dependsOn": [
         "[resourceId('Microsoft.Storage/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]",
@@ -679,7 +679,7 @@
       }
     },
       {
-      "condition": "[parameters('enablePE')]",
+      "condition": "[variables('enablePE')]",
       "type": "Microsoft.Network/privateEndpoints",
       "dependsOn": [
         "[resourceId('Microsoft.Storage/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]",
@@ -698,7 +698,7 @@
       }
     },
       {
-      "condition": "[parameters('enablePE')]",
+      "condition": "[variables('enablePE')]",
       "type": "Microsoft.Network/privateEndpoints",
       "dependsOn": [
         "[resourceId('Microsoft.Storage/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetPEName'))]",
