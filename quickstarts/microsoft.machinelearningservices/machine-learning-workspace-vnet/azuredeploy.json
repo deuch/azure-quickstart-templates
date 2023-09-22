@@ -365,6 +365,21 @@
       "azurechinacloud": "privatelink.api.ml.azure.cn",
       "azurecloud": "privatelink.api.azureml.ms"
     },
+    "privateBlobDnsZoneName": {
+      "azureusgovernment": "privatelink.blob.core.usgovcloudapi.net"
+      "azurechinacloud": "privatelink.blob.core.usgovcloudapi.net"
+      "azurecloud": "privatelink.blob.core.windows.net"
+    },
+    "privateFilebDnsZoneName": {
+      "azureusgovernment": "privatelink.file.core.usgovcloudapi.net"
+      "azurechinacloud": "privatelink.file.core.usgovcloudapi.net"
+      "azurecloud": "privatelink.file.core.windows.net"
+    },
+    "privateKVDnsZoneName": {
+      "azureusgovernment": "privatelink.vaultcore.usgovcloudapi.net"
+      "azurechinacloud": "privatelink.vaultcore.azure.cn"
+      "azurecloud": "privatelink.vaultcore.azure.net"
+    },
     "privateAznbDnsZoneName": {
       "azureusgovernment": "privatelink.notebooks.usgovcloudapi.net",
       "azurecloud": "privatelink.notebooks.azure.net",
@@ -412,7 +427,37 @@
         ]
       }
     },
+    "privateBlobEndpointSettings": {
+      "name": "[format('{0}-PrivateEndpoint-blob', parameters('workspaceName'))]",
+      "properties": {
+        "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "groupIds": [
+          "blob"
+        ]
+      }
+    },
+    "privateFileEndpointSettings": {
+      "name": "[format('{0}-PrivateEndpoint-file', parameters('workspaceName'))]",
+      "properties": {
+        "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "groupIds": [
+          "file"
+        ]
+      }
+    },
+    "privateKVEndpointSettings": {
+      "name": "[format('{0}-PrivateEndpoint-kv', parameters('workspaceName'))]",
+      "properties": {
+        "privateLinkServiceId": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+        "groupIds": [
+          "amlworkspace"
+        ]
+      }
+    },
     "defaultPEConnections": "[array(variables('privateEndpointSettings'))]",
+    "blobPEConnections": "[array(variables('privateBlobEndpointSettings'))]",
+    "filePEConnections ": "[array(variables('privateFileEndpointSettings'))]",
+    "KVPEConnections ": "[array(variables('privateKVEndpointSettings'))]",
     "userAssignedIdentities": "[union(variables('userAssignedIdentitiesPrimary'), variables('userAssignedIdentitiesCmk'))]",
     "userAssignedIdentityPrimary": {
       "[format('{0}', variables('primaryUserAssignedIdentity'))]": {}
@@ -608,6 +653,15 @@
           "defaultPEConnections": {
             "value": "[variables('defaultPEConnections')]"
           },
+          "blobPEConnections": {
+            "value": "[variables('blobPEConnections')]"
+          },
+          "filePEConnections": {
+            "value": "[variables('filePEConnections')]"
+          },
+          "KVPEConnections": {
+            "value": "[variables('KVPEConnections')]"
+          },
           "subnetComputeId": {
             "value": "[variables('subnetComputeId')]"
           },
@@ -619,6 +673,15 @@
           },
           "privateAznbDnsZoneName": {
             "value": "[variables('privateAznbDnsZoneName')]"
+          },
+          "privateBlobDnsZoneName": {
+            "value": "[variables('privateBlobDnsZoneName')]"
+          },
+          "privateFileDnsZoneName": {
+            "value": "[variables('privateFileDnsZoneName')]"
+          },
+          "privateKVDnsZoneName": {
+            "value": "[variables('privateKVDnsZoneName')]"
           },
           "vnetId": {
             "value": "[variables('vnetId')]"
@@ -653,6 +716,15 @@
             "defaultPEConnections": {
               "type": "array"
             },
+            "blobPEConnections": {
+              "type": "array"
+            },
+            "filePEConnections": {
+              "type": "array"
+            },
+            "KVPEConnections": {
+              "type": "array"
+            },
             "subnetComputeId": {
               "type": "string"
             },
@@ -663,6 +735,15 @@
               "type": "object"
             },
             "privateAznbDnsZoneName": {
+              "type": "object"
+            },
+            "privateBlobDnsZoneName": {
+              "type": "object"
+            },
+            "privateFileDnsZoneName": {
+              "type": "object"
+            },
+            "privateKVDnsZoneName": {
               "type": "object"
             },
             "vnetId": {
@@ -712,6 +793,51 @@
               }
             },
             {
+              "condition": "[parameters('enablePE')]",
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2022-05-01",
+              "name": "[format('{0}-PrivateEndpoint-blob', parameters('workspaceName'))]",
+              "location": "[parameters('vnetLocation')]",
+              "tags": "[parameters('tagValues')]",
+              "properties": {
+                "privateLinkServiceConnections": "[if(equals(parameters('privateEndpointType'), 'AutoApproval'), parameters('blobPEConnections'), json('null'))]",
+                "manualPrivateLinkServiceConnections": "[if(equals(parameters('privateEndpointType'), 'ManualApproval'), parameters('blobPEConnections'), json('null'))]",
+                "subnet": {
+                  "id": "[parameters('subnetPEId')]"
+                }
+              }
+            },
+              {
+              "condition": "[parameters('enablePE')]",
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2022-05-01",
+              "name": "[format('{0}-PrivateEndpoint-file', parameters('workspaceName'))]",
+              "location": "[parameters('vnetLocation')]",
+              "tags": "[parameters('tagValues')]",
+              "properties": {
+                "privateLinkServiceConnections": "[if(equals(parameters('privateEndpointType'), 'AutoApproval'), parameters('filePEConnections'), json('null'))]",
+                "manualPrivateLinkServiceConnections": "[if(equals(parameters('privateEndpointType'), 'ManualApproval'), parameters('filePEConnections'), json('null'))]",
+                "subnet": {
+                  "id": "[parameters('subnetPEId')]"
+                }
+              }
+            },
+              {
+              "condition": "[parameters('enablePE')]",
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2022-05-01",
+              "name": "[format('{0}-PrivateEndpoint-kv', parameters('workspaceName'))]",
+              "location": "[parameters('vnetLocation')]",
+              "tags": "[parameters('tagValues')]",
+              "properties": {
+                "privateLinkServiceConnections": "[if(equals(parameters('privateEndpointType'), 'AutoApproval'), parameters('KVPEConnections'), json('null'))]",
+                "manualPrivateLinkServiceConnections": "[if(equals(parameters('privateEndpointType'), 'ManualApproval'), parameters('KVPEConnections'), json('null'))]",
+                "subnet": {
+                  "id": "[parameters('subnetPEId')]"
+                }
+              }
+            },
+            {
               "condition": "[equals(parameters('privateEndpointType'), 'AutoApproval')]",
               "type": "Microsoft.Network/privateDnsZones",
               "apiVersion": "2020-06-01",
@@ -733,6 +859,42 @@
               "properties": {},
               "dependsOn": [
                 "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint', parameters('workspaceName')))]"
+              ]
+            },
+             {
+              "condition": "[equals(parameters('privateEndpointType'), 'AutoApproval')]",
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2020-06-01",
+              "name": "[parameters('privateBlobDnsZoneName')[toLower(environment().name)]]",
+              "location": "global",
+              "tags": "[parameters('tagValues')]",
+              "properties": {},
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-blob', parameters('workspaceName')))]"
+              ]
+            },
+             {
+              "condition": "[equals(parameters('privateEndpointType'), 'AutoApproval')]",
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2020-06-01",
+              "name": "[parameters('privateFileDnsZoneName')[toLower(environment().name)]]",
+              "location": "global",
+              "tags": "[parameters('tagValues')]",
+              "properties": {},
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-file', parameters('workspaceName')))]"
+              ]
+            },
+             {
+              "condition": "[equals(parameters('privateEndpointType'), 'AutoApproval')]",
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2020-06-01",
+              "name": "[parameters('privateKVDnsZoneName')[toLower(environment().name)]]",
+              "location": "global",
+              "tags": "[parameters('tagValues')]",
+              "properties": {},
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-kv', parameters('workspaceName')))]"
               ]
             },
             {
@@ -773,6 +935,60 @@
             },
             {
               "condition": "[equals(parameters('privateEndpointType'), 'AutoApproval')]",
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2020-06-01",
+              "name": "[format('{0}/{1}', parameters('privateBlobDnsZoneName')[toLower(environment().name)], uniqueString(parameters('vnetId')))]",
+              "location": "global",
+              "tags": "[parameters('tagValues')]",
+              "properties": {
+                "virtualNetwork": {
+                  "id": "[parameters('vnetId')]"
+                },
+                "registrationEnabled": false
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateBlobDnsZoneName')[toLower(environment().name)])]",
+                "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-blob', parameters('workspaceName')))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('privateEndpointType'), 'AutoApproval')]",
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2020-06-01",
+              "name": "[format('{0}/{1}', parameters('privateFileDnsZoneName')[toLower(environment().name)], uniqueString(parameters('vnetId')))]",
+              "location": "global",
+              "tags": "[parameters('tagValues')]",
+              "properties": {
+                "virtualNetwork": {
+                  "id": "[parameters('vnetId')]"
+                },
+                "registrationEnabled": false
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateFileDnsZoneName')[toLower(environment().name)])]",
+                "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-file', parameters('workspaceName')))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('privateEndpointType'), 'AutoApproval')]",
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2020-06-01",
+              "name": "[format('{0}/{1}', parameters('privateKVDnsZoneName')[toLower(environment().name)], uniqueString(parameters('vnetId')))]",
+              "location": "global",
+              "tags": "[parameters('tagValues')]",
+              "properties": {
+                "virtualNetwork": {
+                  "id": "[parameters('vnetId')]"
+                },
+                "registrationEnabled": false
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateKVDnsZoneName')[toLower(environment().name)])]",
+                "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-kv', parameters('workspaceName')))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('privateEndpointType'), 'AutoApproval')]",
               "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
               "apiVersion": "2022-05-01",
               "name": "[format('{0}/{1}', format('{0}-PrivateEndpoint', parameters('workspaceName')), 'default')]",
@@ -789,13 +1005,37 @@
                     "properties": {
                       "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateAznbDnsZoneName')[toLower(environment().name)])]"
                     }
+                  },
+                  {
+                    "name": "privatelink-blob-core-windows-net",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateBlobDnsZoneName')[toLower(environment().name)])]"
+                    }
+                  },
+                  {
+                    "name": "privatelink-file-core-windows-net",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateFileDnsZoneName')[toLower(environment().name)])]"
+                    }
+                  },
+                  {
+                    "name": "privatelink-vaultcore-windows-net",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateKVbDnsZoneName')[toLower(environment().name)])]"
+                    }
                   }
                 ]
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateAznbDnsZoneName')[toLower(environment().name)])]",
                 "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName')[toLower(environment().name)])]",
-                "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint', parameters('workspaceName')))]"
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateBlobDnsZoneName')[toLower(environment().name)])]",
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateFileDnsZoneName')[toLower(environment().name)])]",
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateKVDnsZoneName')[toLower(environment().name)])]",
+                "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint', parameters('workspaceName')))]",
+                "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-blob', parameters('workspaceName')))]",
+                "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-file', parameters('workspaceName')))]",
+                "[resourceId('Microsoft.Network/privateEndpoints', format('{0}-PrivateEndpoint-kv', parameters('workspaceName')))]"
               ]
             }
           ]
