@@ -17,6 +17,7 @@
     },
     "location": {
       "type": "string",
+      "defaultValue":"francecentral",
       "metadata": {
         "description": "Specifies the location for workspace."
       }
