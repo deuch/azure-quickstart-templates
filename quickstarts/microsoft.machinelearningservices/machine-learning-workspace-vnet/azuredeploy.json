@@ -900,7 +900,7 @@
           {
             "name": "privatelink-vaultcore-windows-net",
             "properties": {
-              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('privateKVbDnsZoneName')[toLower(environment().name)])]"
+              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('privateKVDnsZoneName')[toLower(environment().name)])]"
             }
           }
         ]
