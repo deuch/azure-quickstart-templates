@@ -371,7 +371,7 @@
       "azurechinacloud": "privatelink.blob.core.usgovcloudapi.net",
       "azurecloud": "privatelink.blob.core.windows.net"
     },
-    "privateFilebDnsZoneName": {
+    "privateFileDnsZoneName": {
       "azureusgovernment": "privatelink.file.core.usgovcloudapi.net",
       "azurechinacloud": "privatelink.file.core.usgovcloudapi.net",
       "azurecloud": "privatelink.file.core.windows.net"
